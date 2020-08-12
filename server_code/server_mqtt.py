@@ -2,7 +2,7 @@ import paho.mqtt.client as mqtt
 from threading import Thread
 
 MQTT_BROKER_ADDR = "192.168.0.9"
-MQTT_BROKER_PORT = "1883"
+MQTT_BROKER_PORT = 1883
 CHANNEL_SERVER_RX = "test1"
 CHANNEL_SERVER_TX = "test2"
 
