@@ -1,5 +1,7 @@
 import paho.mqtt.client as mqtt
+import json
 from threading import Thread
+
 
 MQTT_BROKER_ADDR = "192.168.0.9"
 MQTT_BROKER_PORT = 1883
@@ -13,8 +15,12 @@ def connected(client, userdata, flag , rc):
   client.publish(CHANNEL_SERVER_TX, "HELLO WORD")
 
 def rx_callback(client, userdata, msg):
-  print("mensaje recibido", end="")
-  print(msg.payload.decode("utf-8"))
+  print("mensaje recibido ", end="")
+  data_rx = msg.payload.decode("utf-8")
+  data = json.load(data_rx)
+  for k in data:
+    print(k, end=" ")
+  print(" ")  
 
 
 
