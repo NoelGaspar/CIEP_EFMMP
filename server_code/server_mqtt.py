@@ -18,7 +18,7 @@ def rx_callback(client, userdata, msg):
   print("mensaje recibido ", end="")
   data_rx = msg.payload.decode("utf-8")
   print(data_rx)
-  data = json.load(data_rx)
+  data = json.loads(data_rx)
   print(data)
 
 
