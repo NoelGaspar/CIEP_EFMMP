@@ -17,11 +17,9 @@ def connected(client, userdata, flag , rc):
 def rx_callback(client, userdata, msg):
   print("mensaje recibido ", end="")
   data_rx = msg.payload.decode("utf-8")
+  print(data_rx)
   data = json.load(data_rx)
-  for k in data:
-    print(k, end=" ")
-  print(" ")  
-
+  print(data)
 
 
 if __name__ == '__main__':
