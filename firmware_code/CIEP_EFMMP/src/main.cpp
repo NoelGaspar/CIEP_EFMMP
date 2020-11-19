@@ -86,6 +86,7 @@ TODOLIST:
 
 #define SCL_PIN   34  // SPI SCL
 #define MOSI_PIN  32  // SPI MOSI
+#define MISO_PIN  35  // SPI MOSI
 #define CS_PIN    33  // SPI CS
 
 //SENSOR PMS UART
@@ -119,7 +120,7 @@ TODOLIST:
 #include <PubSubClient.h>
 
 //NODE DEFINITIONS
-#define SENSOR_ID         "em-ciep-01"// NODE ID
+#define SENSOR_ID         "em-ciep-02"// NODE ID
 #define VESRION           "V0.0.1"    // ACTUAL CODE VERSION
 #define RESPONSE_OK       "ok"        // RESPONSE TO INCOMMING CMD
 #define RESPONSE_FAIL     "error"     // RESPONSE TO INCOMMING CMD
