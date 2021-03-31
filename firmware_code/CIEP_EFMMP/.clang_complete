@@ -1,0 +1,150 @@
+-IC:/Users/Wac/Desktop/repo_pega/UDD/Estaciones de monitoreo/CIEP_EFMMP/firmware_code/CIEP_EFMMP/include
+-IC:/Users/Wac/Desktop/repo_pega/UDD/Estaciones de monitoreo/CIEP_EFMMP/firmware_code/CIEP_EFMMP/src
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/libraries/FS/src
+-IC:/Users/Wac/Desktop/repo_pega/UDD/Estaciones de monitoreo/CIEP_EFMMP/firmware_code/CIEP_EFMMP/.pio/libdeps/esp32doit-devkit-v1/DallasTemperature
+-IC:/Users/Wac/Desktop/repo_pega/UDD/Estaciones de monitoreo/CIEP_EFMMP/firmware_code/CIEP_EFMMP/.pio/libdeps/esp32doit-devkit-v1/OneWire
+-IC:/Users/Wac/Desktop/repo_pega/UDD/Estaciones de monitoreo/CIEP_EFMMP/firmware_code/CIEP_EFMMP/.pio/libdeps/esp32doit-devkit-v1/DHT sensor library
+-IC:/Users/Wac/Desktop/repo_pega/UDD/Estaciones de monitoreo/CIEP_EFMMP/firmware_code/CIEP_EFMMP/.pio/libdeps/esp32doit-devkit-v1/Adafruit Unified Sensor
+-IC:/Users/Wac/Desktop/repo_pega/UDD/Estaciones de monitoreo/CIEP_EFMMP/firmware_code/CIEP_EFMMP/.pio/libdeps/esp32doit-devkit-v1/SD/src
+-IC:/Users/Wac/Desktop/repo_pega/UDD/Estaciones de monitoreo/CIEP_EFMMP/firmware_code/CIEP_EFMMP/.pio/libdeps/esp32doit-devkit-v1/RTClib
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/libraries/Wire/src
+-IC:/Users/Wac/Desktop/repo_pega/UDD/Estaciones de monitoreo/CIEP_EFMMP/firmware_code/CIEP_EFMMP/.pio/libdeps/esp32doit-devkit-v1/FastLED/src
+-IC:/Users/Wac/Desktop/repo_pega/UDD/Estaciones de monitoreo/CIEP_EFMMP/firmware_code/CIEP_EFMMP/.pio/libdeps/esp32doit-devkit-v1/EspSoftwareSerial/src
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/libraries/SPI/src
+-IC:/Users/Wac/Desktop/repo_pega/UDD/Estaciones de monitoreo/CIEP_EFMMP/firmware_code/CIEP_EFMMP/.pio/libdeps/esp32doit-devkit-v1/TinyGSM/src
+-IC:/Users/Wac/Desktop/repo_pega/UDD/Estaciones de monitoreo/CIEP_EFMMP/firmware_code/CIEP_EFMMP/.pio/libdeps/esp32doit-devkit-v1/PubSubClient/src
+-IC:/Users/Wac/Desktop/repo_pega/UDD/Estaciones de monitoreo/CIEP_EFMMP/firmware_code/CIEP_EFMMP/.pio/libdeps/esp32doit-devkit-v1/ArduinoJson/src
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/config
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/app_trace
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/app_update
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/asio
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/bootloader_support
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/bt
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/coap
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/console
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/driver
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/esp-tls
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/esp32
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/esp_adc_cal
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/esp_event
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/esp_http_client
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/esp_http_server
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/esp_https_ota
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/esp_ringbuf
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/ethernet
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/expat
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/fatfs
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/freemodbus
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/freertos
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/heap
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/idf_test
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/jsmn
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/json
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/libsodium
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/log
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/lwip
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/mbedtls
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/mdns
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/micro-ecc
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/mqtt
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/newlib
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/nghttp
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/nvs_flash
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/openssl
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/protobuf-c
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/protocomm
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/pthread
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/sdmmc
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/smartconfig_ack
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/soc
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/spi_flash
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/spiffs
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/tcp_transport
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/tcpip_adapter
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/ulp
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/vfs
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/wear_levelling
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/wifi_provisioning
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/wpa_supplicant
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/xtensa-debug-module
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/esp-face
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/esp32-camera
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/tools/sdk/include/fb_gfx
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/cores/esp32
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/variants/doitESP32devkitV1
+-IC:/Users/Wac/Desktop/repo_pega/UDD/Estaciones de monitoreo/CIEP_EFMMP/firmware_code/CIEP_EFMMP/.pio/libdeps/esp32doit-devkit-v1/Adafruit BusIO
+-IC:/Users/Wac/Desktop/repo_pega/UDD/Estaciones de monitoreo/CIEP_EFMMP/firmware_code/CIEP_EFMMP/.pio/libdeps/esp32doit-devkit-v1/Adafruit SHT31 Library
+-IC:/Users/Wac/Desktop/repo_pega/UDD/Estaciones de monitoreo/CIEP_EFMMP/firmware_code/CIEP_EFMMP/.pio/libdeps/esp32doit-devkit-v1/TinyWireM
+-IC:/Users/Wac/.platformio/lib/Adafruit GFX Library
+-IC:/Users/Wac/.platformio/lib/Adafruit ILI9341
+-IC:/Users/Wac/.platformio/lib/Adafruit PWM Servo Driver Library
+-IC:/Users/Wac/.platformio/lib/Adafruit SHT31 Library
+-IC:/Users/Wac/.platformio/lib/Adafruit SSD1306
+-IC:/Users/Wac/.platformio/lib/Adafruit ST7735 and ST7789 Library
+-IC:/Users/Wac/.platformio/lib/Adafruit STMPE610_ID377
+-IC:/Users/Wac/.platformio/lib/Adafruit TouchScreen
+-IC:/Users/Wac/.platformio/lib/Adafruit seesaw Library_ID1890
+-IC:/Users/Wac/.platformio/lib/ArduinoJson/src
+-IC:/Users/Wac/.platformio/lib/ArduinoJson@5.13.4/src
+-IC:/Users/Wac/.platformio/lib/Corsair Lighting Protocol/src
+-IC:/Users/Wac/.platformio/lib/DS3231
+-IC:/Users/Wac/.platformio/lib/DallasTemperature_ID54
+-IC:/Users/Wac/.platformio/lib/EnableInterrupt_ID311
+-IC:/Users/Wac/.platformio/lib/EnableInterrupt_ID311/utility
+-IC:/Users/Wac/.platformio/lib/EspSoftwareSerial/src
+-IC:/Users/Wac/.platformio/lib/FastLED NeoMatrix
+-IC:/Users/Wac/.platformio/lib/FastLED_ID126
+-IC:/Users/Wac/.platformio/lib/Framebuffer GFX_ID7194
+-IC:/Users/Wac/.platformio/lib/OneWire_ID1
+-IC:/Users/Wac/.platformio/lib/PMSerial/src
+-IC:/Users/Wac/.platformio/lib/PubSubClient/src
+-IC:/Users/Wac/.platformio/lib/RTC/src
+-IC:/Users/Wac/.platformio/lib/Rotary
+-IC:/Users/Wac/.platformio/lib/SD
+-IC:/Users/Wac/.platformio/lib/SHT1x
+-IC:/Users/Wac/.platformio/lib/SimpleTimer
+-IC:/Users/Wac/.platformio/lib/SoftwareSerial
+-IC:/Users/Wac/.platformio/lib/Timer
+-IC:/Users/Wac/.platformio/lib/TimerOne_ID131
+-IC:/Users/Wac/.platformio/lib/TinyGSM/src
+-IC:/Users/Wac/.platformio/lib/U8glib-HAL_ID1932/src
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/libraries/ArduinoOTA/src
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/libraries/AsyncUDP/src
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/libraries/AzureIoT/src
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/libraries/BLE/src
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/libraries/BluetoothSerial/src
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/libraries/DNSServer/src
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/libraries/EEPROM/src
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/libraries/ESP32/src
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/libraries/ESPmDNS/src
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/libraries/FFat/src
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/libraries/HTTPClient/src
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/libraries/HTTPUpdate/src
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/libraries/NetBIOS/src
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/libraries/Preferences/src
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/libraries/SD/src
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/libraries/SD_MMC/src
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/libraries/SPIFFS/src
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/libraries/SimpleBLE/src
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/libraries/Ticker/src
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/libraries/Update/src
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/libraries/WebServer/src
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src
+-IC:/Users/Wac/.platformio/packages/framework-arduinoespressif32/libraries/WiFiClientSecure/src
+-IC:/Users/Wac/.platformio/packages/toolchain-xtensa32/xtensa-esp32-elf/include/c++/5.2.0
+-IC:/Users/Wac/.platformio/packages/toolchain-xtensa32/xtensa-esp32-elf/include/c++/5.2.0/xtensa-esp32-elf
+-IC:/Users/Wac/.platformio/packages/toolchain-xtensa32/lib/gcc/xtensa-esp32-elf/5.2.0/include
+-IC:/Users/Wac/.platformio/packages/toolchain-xtensa32/lib/gcc/xtensa-esp32-elf/5.2.0/include-fixed
+-IC:/Users/Wac/.platformio/packages/toolchain-xtensa32/xtensa-esp32-elf/include
+-IC:/Users/Wac/.platformio/packages/tool-unity
+-DPLATFORMIO=50101
+-DARDUINO_ESP32_DEV
+-DESP32
+-DESP_PLATFORM
+-DF_CPU=240000000L
+-DHAVE_CONFIG_H
+-DMBEDTLS_CONFIG_FILE="mbedtls/esp_config.h"
+-DARDUINO=10805
+-DARDUINO_ARCH_ESP32
+-DARDUINO_VARIANT="doitESP32devkitV1"
+-DARDUINO_BOARD="DOIT ESP32 DEVKIT V1"

@@ -10,17 +10,17 @@ DESCRIPTION : This code read a PMsensor and publish the data to a server.
     - Json to strcuture data
     - MQTT to publish data
     - GSM/GPRS to transmit data (SIM800L module)
-  Aslo the node count with a
-    - DHT sensor to read external temp and humidity,
+  Aslo the node count with a 
+    - DHT sensor to read external temp and humidity, 
     - RTC module to get actual time
     - SD  card to save data localy
     - RGB PM25 status LED
     - LED to show node status
   and pre-chamber to acconditionate the samples. This prechamber count with
-    - heater
-    - a Temperatura sensor PT100  to read the temperature of the pre chamber, and
+    - heater  
+    - a Temperatura sensor PT100  to read the temperature of the pre chamber, and  
     - Sensor to read the sample temp and humidity.
-
+  
   This code run over a esp32.
 
 dependences:
@@ -45,6 +45,7 @@ RX-MSG: Json structure of msg to recive
   "arg2": 48.75608
 }
 
+
 TX-MSG: Json structure of msg to send
 {
   "id": "CIEP-05",
@@ -65,27 +66,14 @@ TX-MSG: Json structure of msg to respond status
   "state"   = "error";
 }
 
-VERSION FEATURE
-- fixing rtc time setup
-- fixing on SD card per sampler
-
-
 TODOLIST:
-- add temperature control. CHECK
 
-LIST OF LIBRARIES USED :
-
-bblanchon/ArduinoJson @ ^6.17.3
-knolleary/PubSubClient @ ^2.8
-vshymanskyy/TinyGSM @ ^0.10.9
-fastled/FastLED @ 3.4.0    ;FastLED for controlling RGB leds.
-adafruit/RTClib @ 1.12.4   ; RTClib for RTC module.
-arduino-libraries/SD @ ^1.2.4 ; SD lib
-adafruit/Adafruit Unified Sensor @ ^1.1.4
-adafruit/DHT sensor library @ ^1.4.0
-milesburton/DallasTemperature @ ^3.9.1
-paulstoffregen/OneWire @ ^2.3.5
-
+- Probe pt100 sensor.           CHECK
+- add temperature control.      
+- make n_samples programmable.  CHECK
+- probe RTC                     CHECK
+- probe datalogger SD           CHECK
+- add RGB LED feature           CHECK
 
 */
 
@@ -94,6 +82,9 @@ paulstoffregen/OneWire @ ^2.3.5
     Includes
 -----------------*/
 #include <Arduino.h>
+#include "FS.h"
+#include "SD.h"
+#include "SPI.h"
 #include <Wire.h>
 #include <ArduinoJson.h>
 #include <DHT.h>
@@ -101,9 +92,6 @@ paulstoffregen/OneWire @ ^2.3.5
 #include <DallasTemperature.h>
 #include <RTClib.h>
 #include <FastLED.h>
-//#include "FS.h"
-#include "SD.h"
-#include "SPI.h"
 
 
 /*----------------
@@ -116,7 +104,6 @@ paulstoffregen/OneWire @ ^2.3.5
 #define PT100_SENSOR_PIN  18 //PRE CHAMBER TEMPERATURE SENSOR
 #define DHT_SENSOR_PIN    19 //DHT
 
-//SPI PORT
 #define SCL_PIN   2 //34  // SPI SCL
 #define MOSI_PIN  32  // SPI MOSI
 #define MISO_PIN  35  // SPI MOSI
@@ -142,6 +129,8 @@ paulstoffregen/OneWire @ ^2.3.5
 #define BAUDRATE_DEBUG  115200
 #define BAUDRATE_SIM    9600
 #define BAUDRATE_PMS    9600
+#define PMS5003ST   //Define the type of sensor  use #define PMS5003 FOR D AND C sensors
+#define NODE_INT    //define the type of node if ext use #define NODE_EXT   
 
 // Configure TinyGSM library
 #define TINY_GSM_MODEM_SIM800       // Modem is SIM800
@@ -151,32 +140,26 @@ paulstoffregen/OneWire @ ^2.3.5
 #include <PubSubClient.h>
 
 //NODE DEFINITIONS
-#define SENSOR_ID           "CIEP-19"// NODE ID
-#define VESRION             "V0.2.1"    // ACTUAL CODE VERSION
-#define RESPONSE_OK         "ok"        // RESPONSE TO INCOMMING CMD
-#define RESPONSE_FAIL       "error"     // RESPONSE TO INCOMMING CMD
-#define RESPONSE_READY      "Ready"     // RESPONSE TO INCOMMING CMD
-#define RESPONSE_ACQ        "reading"   // RESPONSE TO INCOMMING CMD
-#define RESPONSE_START      "start_ok"  // RESPONSE TO INCOMMING CMD
-#define RESPONSE_STOP       "stop_ok"   // RESPONSE TO INCOMMING CMD
-#define TYPE_DATA           "data"      // TYPE OF RESPONSE. DATA: DATA FROM SENSOR
-#define TYPE_RESP           "resp"      // TYPE OF RESPONSE. RESP: RESPONSE TO INCOMMING CMD
-#define HEATER_MANUAL_MODE  0         // MANUAL MODE FOR HEATER
-#define HEATER_AUTO_MODE    1         // AUTO MODE FOR HEATER
-#define DHTTYPE             DHT22       // DEFINE DHT TYPE SENSOR
-#define PMS5003ST                     // Define the type of sensor  use #define PMS5003 FOR D AND C sensors
-#define WARMING_UP          1
-#define CHILLING            0
+#define SENSOR_ID         "CIEP-19"// NODE ID
+#define VESRION           "V0.0.2"    // ACTUAL CODE VERSION
+#define RESPONSE_OK       "ok"        // RESPONSE TO INCOMMING CMD
+#define RESPONSE_FAIL     "error"     // RESPONSE TO INCOMMING CMD
+#define RESPONSE_READY    "Ready"     // RESPONSE TO INCOMMING CMD
+#define RESPONSE_ACQ      "reading"   // RESPONSE TO INCOMMING CMD
+#define RESPONSE_START    "start_ok"  // RESPONSE TO INCOMMING CMD
+#define RESPONSE_STOP     "stop_ok"   // RESPONSE TO INCOMMING CMD
+#define TYPE_DATA         "data"      // TYPE OF RESPONSE. DATA: DATA FROM SENSOR
+#define TYPE_RESP         "resp"      // TYPE OF RESPONSE. RESP: RESPONSE TO INCOMMING CMD
 
-#define TIMER_F_SCLK        10000     // TIMER SOURCE CLOCK. IN kHz
-#define TIMER_DEFAULT_TS    10        // TIMER DEFAULT PERIOD. IN SECONDS
-#define HEATER_UPDATE_TS    1         // TIMER DEFAULT PERIOD. IN SECONDS
-#define N_SAMPLES           10        // NUMBER OF SAMPLES TO CONSIDERAR IN THE AVERAGE OF SAMPLES
-#define NUM_LEDS            1         // NUMBER OF LEDS PER STRIP
-#define HEATER_TRESHOLD     150       // SOFTWARE LIMIT FOR THE HEATER. OUTPUT RANGE : 0 .. 255
-#define HUMIDITY_LIMIT      75.0      // HUMIDITY LIMIT FOR AUTO MODE
-#define TEMP_LIMIT          27.0      // TEMPERATURE LIMIT FOR THE AUTO MODE
-#define TEMP_DELTA          3         // DELTA VALUE FOR HYSTERESIS
+#define TIMER_F_SCLK      10000       // TIMER SOURCE CLOCK. IN kHz
+#define TIMER_DEFAULT_TS  10          // TIMER DEFAULT PERIOD. IN SECONDS 
+#define N_SAMPLES         10          // NUMBER OF SAMPLES TO CONSIDERAR IN THE AVERAGE OF SAMPLES
+#define HEATER_TRESHOLD   80          // SOFTWARE LIMIT FOR THE HEATER. OUTPUT RANGE : 0 .. 255
+#define T_TRESHOLD        4.0         // 
+#define H_TRESHOLD        80.0        // 
+#define NUM_LEDS          1
+
+#define DHTTYPE           DHT22
 
 //GPRS sim credentials
 const char apn[]      = "freeeway"; //"internet.emt.ee"; // APN from PRIMCARDS
@@ -188,30 +171,33 @@ const char* mqtt_server = "190.121.23.217"; //mqtt IP broker (string)
 #define mqtt_port     1883                  //mqtt port (int)
 #define MQTT_USER     ""                    //mqtt user
 #define MQTT_PASSWORD ""                    //mqtt passwd
+/*
+#define MQTT_PUBLISH_CH   "pm/test1"        // CHANNEL TO PUBLISH
+#define MQTT_RECEIVER_CH  "pm/test2"        // CHANNEL TO SUBSCRIBE (RECIVE COMMANDS)
+*/
 #define MQTT_PUBLISH_CH   "CIEP/tx"        // CHANNELS FOR UDD
 #define MQTT_RECEIVER_CH  "CIEP/rx"        // CHANNELS FOR UDD
-
-//POWER TTGO-TCALL MODULE  DEFINITION
+//POWER TTGO-TCALL MODULE  DEFINITION 
 #define IP5306_ADDR          0x75
 #define IP5306_REG_SYS_CTL0  0x00
+
 
 /*-----------------
     Instances
 -----------------*/
 
-//JSON
 char json_tx[1024];
 
 //JSON to RECIVE
 const size_t capacity_rx = JSON_OBJECT_SIZE(4) + 40;
 DynamicJsonDocument doc_rx(capacity_rx);
-const char* json_rx =  "{\"id\":\"CIEP-02\",\"cmd\":\"led\",\"arg1\":48.756,\"arg2\":48.75608}";
+const char* json_rx =  "{\"id\":\"em-ciep-02\",\"cmd\":\"LED\",\"arg1\":48.756,\"arg2\":48.75608}";
 DeserializationError error_rx;
 
-//SPI BUSES
+//SPI BUSES 
 SPIClass spi;
 
-//I2C BUSES
+//I2C BUSES 
 TwoWire I2C_BUS = TwoWire(0);
 
 //Client and mqtt
@@ -219,9 +205,9 @@ TinyGsm       modem(SerialSIM);
 TinyGsmClient client(modem);
 PubSubClient  mqtt(client);
 
-//timers
+//timers 
 hw_timer_t * timer = NULL;    //timer to adquisition of sensors
-hw_timer_t * heater_timer = NULL;  //timer to control the heater
+hw_timer_t * timerhm = NULL;  //timer to control the heater
 
 //DHT sensor
 DHT dht(DHT_SENSOR_PIN,DHTTYPE);
@@ -262,7 +248,7 @@ CRGB rgb_led[NUM_LEDS];
     uint16_t framelen;
     uint16_t pm10_standard, pm25_standard, pm100_standard;
     uint16_t pm10_env, pm25_env, pm100_env;
-    uint16_t particles_03um, particles_05um, particles_10um, particles_25um, particles_50um, particles_100um;
+    uint16_t particles_03um, particles_05um, particles_10um, particles_25um, particles_50um, particles_100um;    
     uint16_t unused;
     uint16_t checksum;
   };
@@ -273,17 +259,17 @@ bool pms_data_ready = false ; // FLAG FOR PMS CORRECT ADQUISITION
 long pms_count      = 0;      // COUNTER FOR CORRECT ADQUIRED DATA
 
 //TIMER vars
-int   timer_adqt    = TIMER_DEFAULT_TS;               //VARIABLE TO SET THE TIMER PERIOD. PERIOD = ADQUISITION TIME. in seconds
+int   timer_adqt    = TIMER_DEFAULT_TS;             //VARIABLE TO SET THE TIMER PERIOD. PERIOD = ADQUISITION TIME. in seconds
 int   timer_counter = int(timer_adqt * TIMER_F_SCLK); //VARIABLE TO SET THE MAX COUNT OF THE TIMER COUNTER
 bool  timer_flag    = false;
 
 //TIMER2 heater monitoring
-int   heater_timer_adqt    = HEATER_UPDATE_TS;             //VARIABLE TO SET THE TIMER PERIOD. PERIOD = ADQUISITION TIME
-int   heater_timer_counter = int(heater_timer_adqt * TIMER_F_SCLK); //VARIABLE TO SET THE MAX COUNT OF THE TIMER COUNTER
-bool  heater_timer_flag    = false;   // flag to update heater temperature reading
+int   timerhm_adqt    = TIMER_DEFAULT_TS;             //VARIABLE TO SET THE TIMER PERIOD. PERIOD = ADQUISITION TIME
+int   timerhm_counter = int(timer_adqt * TIMER_F_SCLK); //VARIABLE TO SET THE MAX COUNT OF THE TIMER COUNTER
+bool  timerhm_flag    = false;
 
-//data buffer
-uint8_t scount      = 0;            // COUNTER FOR THE SAMPLES
+//data buffer 
+uint8_t scount        = 0;            // COUNTER FOR THE SAMPLES
 bool publish_flag   = false;        // flag for publish data
 bool reading_state  = false;        // state of the readings
 
@@ -315,11 +301,9 @@ bool led_s_state  = false; // for status LED
 //RGB
 int rgb_pos;
 
-//HEATER
-uint8_t heater_value = 0;     // VARIABLE TO store the heater output value. must be between 0 and 255
+//HEATER 
+uint8_t heater_value = 0;     // VARIABLE TO SAVE THE HEATER OUTPUT VALUE. RANGE : 0 TO 255
 bool    heater_state = false; // VARIABLE TO TURN ON OFF THE HEATER.
-bool    heater_mode  = HEATER_MANUAL_MODE; // 1  auto mode; 0 manual mode.
-float   heater_temp  = 0.0;
 
 //INCOMMING COMMAND VARIABLES
 const char* rcv_id ;                    //RECIVED ID
@@ -347,7 +331,7 @@ String dataMsg;
   Functions headers
 -------------------*/
 bool setPowerBoostKeepOn(int en);
-void setupGSM();
+void setup_gsm();
 void reconnect();
 void mqttCallback(char* topic, byte *payload, unsigned int length);
 void processCmd(byte* payload, unsigned int length);
@@ -360,7 +344,7 @@ bool readPMSdata(Stream *s);void rgbSet(uint16_t pm25_value, bool rgb_onoff);
 void writeFile(fs::FS &fs, const char * path, const char * message);
 void appendFile(fs::FS &fs, const char * path, const char * message);
 void IRAM_ATTR timerISR();
-void IRAM_ATTR timerHeaterISR();
+void IRAM_ATTR timer_HM_ISR();
 
 
 void setup()
@@ -376,7 +360,7 @@ void setup()
 
   //I2C
   I2C_BUS.begin(MODEM_SDA,MODEM_SCL,400000);
-
+  
    // Keep power when running from battery
   bool isOk = setPowerBoostKeepOn(1);
   SerialDBG.println(String("IP5306 KeepOn ") + (isOk ? "OK" : "FAIL"));
@@ -399,7 +383,7 @@ void setup()
   //onboard LED
   pinMode(OB_LED_PIN, OUTPUT);
   digitalWrite(OB_LED_PIN, LOW);
-
+  
   //RGB
   FastLED.addLeds<NEOPIXEL,RGB_LED_PIN>(rgb_led,NUM_LEDS);
   pinMode(RGB_LED_PIN, OUTPUT);
@@ -416,63 +400,70 @@ void setup()
   pt100.begin();
   delay(250);
 
-  if (! rtc.begin())
-  {
+  if (! rtc.begin()) {
     SerialDBG.println("Couldn't find RTC");
-  }
-  else
-  {
-    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+    
   }
 
+  
   spi = SPIClass(HSPI);
   spi.begin(SCL_PIN,MISO_PIN,MOSI_PIN,CS_PIN);
-
+  
   if(!SD.begin(CS_PIN,spi,10000000))
-  { SerialDBG.println("Card Mount Failed");}
-
+  {
+    SerialDBG.println("Card Mount Failed");
+  
+  }
+  
   uint8_t cardType = SD.cardType();
   if(cardType == CARD_NONE)
-  { SerialDBG.println("No SD card attached");}
+  {
+    SerialDBG.println("No SD card attached");
+    
+  }
 
   SerialDBG.println("Initializing SD card...");
   if (!SD.begin(CS_PIN))
-  { SerialDBG.println("ERROR - SD card initialization failed!"); }
+  {
+    SerialDBG.println("ERROR - SD card initialization failed!");
+  }
 
   File file = SD.open("/data.txt");
-  if(!file)
+  if(!file) 
   {
     SerialDBG.println("File doens't exist");
     SerialDBG.println("Creating file...");
-    writeFile(SD, "/data.txt", "ID, Date, Hour, Temperature \r\n");
+    writeFile(SD, "/data.txt", "Reading ID, Date, Hour, Temperature \r\n");
   }
-  else
+  else 
   {
-    SerialDBG.println("File already exists");
+    SerialDBG.println("File already exists");  
   }
   file.close();
+  
+  
+//  //setup Timer
+//  timerhm = timerBegin(2, 8000, true);              //timer 2, prescaler 8000, counting up
+//  timerAttachInterrupt(timerhm,&timer_HM_ISR,true); //params: timer object, pointer to ISR function anddress, mode edge (if false: level mode)
+//  timerAlarmWrite(timerhm, timerhm_counter,true);   // params: timer object, counter_limit, restart counter on top.// to get T= 1s, n=T*f_{timer source clock}
+//  timerAlarmEnable(timerhm);              // enable CTC mode
+//  timerStop(timerhm);                     //stop timer
 
   //GSM
-  setupGSM();
+  setup_gsm();
 
   //MQTT init
   mqtt.setServer(mqtt_server, mqtt_port);
-  mqtt.setCallback(mqttCallback);
+  mqtt.setCallback(mqttCallback); 
 
   reconnect();
-
+  
   //setup Timer
-  timer = timerBegin(3, 8000, true);          //timer 3, prescaler 8000, counting up
+  timer = timerBegin(3, 8000, true);    //timer 3, prescaler 8000, counting up
   timerAttachInterrupt(timer,&timerISR,true); //params: timer object, pointer to ISR function anddress, mode edge (if false: level mode)
-  timerAlarmWrite(timer, timer_counter,true); // params: timer object, counter_limit, restart counter on top.// to get T= 1s, n=T*f_{timer source clock}
-  timerAlarmEnable(timer);                    // enable CTC mode
-
-  //setup heater Timer
-  heater_timer = timerBegin(2, 8000, true);                 //timer 2, prescaler 8000, counting up
-  timerAttachInterrupt(heater_timer,&timerHeaterISR,true);  //params: timer object, pointer to ISR function anddress, mode edge (if false: level mode)
-  timerAlarmWrite(heater_timer, heater_timer_counter,true); // params: timer object, counter_limit, restart counter on top.// to get T= 1s, n=T*f_{timer source clock}
-  timerAlarmEnable(heater_timer);                           // enable CTC mode
-  timerStop(heater_timer);                                  //stop timer
+  timerAlarmWrite(timer, timer_counter,true);   // params: timer object, counter_limit, restart counter on top.// to get T= 1s, n=T*f_{timer source clock}
+  timerAlarmEnable(timer);              // enable CTC mode
+  //timerStop(timer);                     //stop timer
 
 }
 
@@ -493,45 +484,14 @@ void loop()
   if(publish_flag)
   {
     publishSensor();    //publish data
-    publish_flag = false;
+    publish_flag = false; 
   }
-  if(heater_timer_flag)
-  {
-    pt100.requestTemperatures();
-    heater_temp = pt100.getTempCByIndex(0);
-    heater_timer_flag = false;
-  }
-  //automatic control for heater
-  if(heater_mode == HEATER_AUTO_MODE) // automatic control of temperature
-  {
-    if(heater_temp >= TEMP_LIMIT)
-    {
-      dacWrite(HEATER_PIN,0);
-      heater_state = CHILLING ;
-    }
-    else if((heater_temp < TEMP_LIMIT) && (heater_temp >= (TEMP_LIMIT - TEMP_DELTA)))
-    {
-      if(heater_state == WARMING_UP){ dacWrite(HEATER_PIN, heater_value); }
-      else{ dacWrite(HEATER_PIN,0); }
-    }
-    else if( heater_temp < (TEMP_LIMIT - TEMP_DELTA) )
-    {
-      dacWrite(HEATER_PIN, heater_value);
-      heater_state = WARMING_UP;
-    }
-  }
-  else
-  {
-    dacWrite(HEATER_PIN, 0);
-  }
-
-
 }
 
 /*-------------------
   Functions
 -------------------*/
-void setupGSM()
+void setup_gsm()
 {
   delay(10);
 
@@ -552,15 +512,15 @@ void setupGSM()
   SerialDBG.println(" success");
 
   SerialDBG.print("Connecting to the network...");
-  if (!modem.isNetworkConnected())
+  if (!modem.isNetworkConnected()) 
   {
-    SerialDBG.println(" fail");
+    SerialDBG.println(" fail");  
   }
   SerialDBG.println("Network connected");
 
   SerialDBG.print("Connecting to ");
   SerialDBG.print(apn);
-  if (!modem.gprsConnect(apn, gprsUser, gprsPass))
+  if (!modem.gprsConnect(apn, gprsUser, gprsPass)) 
   {
     SerialDBG.println(" fail");
     delay(10000);
@@ -569,7 +529,7 @@ void setupGSM()
   SerialDBG.println(" success");
 
   SerialDBG.print("Checking connection...");
-  if (!modem.isGprsConnected())
+  if (!modem.isGprsConnected()) 
   {
     SerialDBG.println(" fail");
   }
@@ -577,18 +537,18 @@ void setupGSM()
 }
 
 void reconnect()
-{
+{ 
 
   const size_t capacity_tx = JSON_OBJECT_SIZE(4);
   DynamicJsonDocument doc_tx(capacity_tx);
-
+  
   doc_tx["id"]      = id;
   doc_tx["time"]    = lastTimeUnix;
   doc_tx["type"]    = TYPE_RESP;
   doc_tx["state"]   = RESPONSE_READY;
 
   serializeJson(doc_tx, json_tx);
-
+   
   while(!mqtt.connected())
   {
     SerialDBG.println("MQTT not connected");
@@ -639,11 +599,11 @@ void processCmd(byte* payload, unsigned int length)
     param1  = doc_rx["arg1"];
     param2  = doc_rx["arg2"];
 
-    if(strcmp(cmd,"led") == 0)     // SET LED CMD: arg1 = led state,
+    if(strcmp(cmd,"led") == 0)     // SET LED CMD: arg1 = led state, 
     {
-      if(param1 == 1)
+      if(param1 == 1) 
       {
-
+       
         digitalWrite(OB_LED_PIN,1);
         publishStatus(RESPONSE_OK);
       }
@@ -653,7 +613,7 @@ void processCmd(byte* payload, unsigned int length)
         publishStatus(RESPONSE_OK);
       }
     }
-
+    
     else if(strcmp(cmd,"heater_set") == 0) // SET HEATER value: arg1 = heater value
     {
       if( param1 > HEATER_TRESHOLD){ heater_value = HEATER_TRESHOLD; }
@@ -664,13 +624,13 @@ void processCmd(byte* payload, unsigned int length)
     else if(strcmp(cmd,"heater_on") == 0) // HEATER on off: arg1 = heater state
     {
       if( param1 == 1 )
-      {
-        dacWrite(HEATER_PIN, heater_value);
+      { 
+        dacWrite(HEATER_PIN, heater_value); 
         heater_state = true;
       }
       if( param1 == 0 )
-      {
-        dacWrite(HEATER_PIN, 0);
+      { 
+        dacWrite(HEATER_PIN, 0); 
         heater_state = false;
       }
     }
@@ -680,11 +640,11 @@ void processCmd(byte* payload, unsigned int length)
       scount = 0;
       reading_state = true;
       timerRestart(timer);
-      publishStatus(RESPONSE_START);
+      publishStatus(RESPONSE_START); 
     }
     else if(strcmp(cmd,"stop") == 0)
     {
-      timerStop(timer);
+      timerStop(timer); 
       reading_state = false;
       rgbSet(0,0);
       publishStatus(RESPONSE_OK);
@@ -695,23 +655,23 @@ void processCmd(byte* payload, unsigned int length)
       timerAlarmDisable(timer);
 
       n_samples    = param1;
-
-      timerAlarmEnable(timer);
+      
+      timerAlarmEnable(timer);              
       timerRestart(timer);
-
+      
       t_pms_sum   = 0.0;
       h_pms_sum   = 0.0;
-      h_node_sum  = 0.0;
-      t_node_sum  = 0.0;
+      h_node_sum  = 0.0;  
+      t_node_sum  = 0.0;  
       pm25_sum    = 0;
       scount      = 0;
-
+            
       publishStatus(RESPONSE_OK);
     }
     else if(strcmp(cmd,"ID") == 0)
     {
       /* TODO*/
-      publishStatus(RESPONSE_OK);
+      publishStatus(RESPONSE_OK); 
     }
     else if(strcmp(cmd,"pmTH") == 0)
     {
@@ -733,22 +693,22 @@ void processCmd(byte* payload, unsigned int length)
   else
   {
     SerialDBG.println("ID fail");
-  }
+  }  
 }
 
 void publishSensor()
-{
+{ 
   #ifdef PMS5003ST
     const size_t capacity_tx = JSON_OBJECT_SIZE(8);
   #else
     const size_t capacity_tx = JSON_OBJECT_SIZE(6);
   #endif
   DynamicJsonDocument doc_tx(capacity_tx);
-
+  
   doc_tx["id"]      = id;
   doc_tx["type"]    = TYPE_DATA;
   doc_tx["time"]    = lastTimeUnix;
-
+  
   pm25_avg = (float)pm25_sum / (float)n_samples;
 
   t_node_avg = t_node_sum / n_samples;
@@ -764,7 +724,7 @@ void publishSensor()
     doc_tx["ts"] = t_pms_avg;
     doc_tx["hs"] = h_pms_avg;
   #endif
-
+  
   serializeJson(doc_tx, json_tx);
   SerialDBG.println("msg to publish: ");
   SerialDBG.println(json_tx);
@@ -772,16 +732,16 @@ void publishSensor()
 
   t_pms_sum   = 0.0;
   h_pms_sum   = 0.0;
-  h_node_sum  = 0.0;
-  t_node_sum  = 0.0;
+  h_node_sum  = 0.0;  
+  t_node_sum  = 0.0;  
   pm25_sum    = 0;
 }
 
 void publishStatus(const char * resp)
-{
+{ 
   const size_t capacity_tx = JSON_OBJECT_SIZE(4);
   DynamicJsonDocument doc_tx(capacity_tx);
-
+  
   doc_tx["id"]      = id;
   doc_tx["time"]    = lastTimeUnix;
   doc_tx["type"]    = TYPE_RESP;
@@ -806,12 +766,12 @@ void publishMqtt(char *serialData)
 void writeDatalogger()
 {
 #ifdef PMS5003ST
-  dataMsg = String(SENSOR_ID) + String(lastTimeUnix)+","+String(data.pm25_standard)+","+String(t_node)+","+String(h_node)+","+String(data.pm_t)+","+String(data.pm_h)+"\r\n";
+  dataMsg = String(lastTimeUnix)+","+String(data.pm25_standard)+","+String(t_node)+","+String(h_node)+","+String(data.pm_t)+","+String(data.pm_h)+"\r\n";
 #else
-  dataMsg = String(SENSOR_ID) + String(lastTimeUnix)+","+String(data.pm25_standard)+","+String(t_node)+","+String(h_node)+","+String(0.00)+","+String(0.00)+"\r\n";
+  dataMsg = String(lastTimeUnix)+","+String(data.pm25_standard)+","+String(t_node)+","+String(h_node)+","+String(0.00)+","+String(0.00)+"\r\n";
 #endif
   SerialDBG.println(dataMsg);
-  appendFile(SD, "/data.txt", dataMsg.c_str());
+    //appendFile(SD, "/data.txt", dataMsg.c_str());
 }
 
 
@@ -838,34 +798,34 @@ void readSensors()
   if(isnan(h_node)){ h_node = 0.0;}
   if(isnan(t_node)){ t_node = 0.0;}
 
-  h_node_sum  += h_node;
-  t_node_sum  += t_node;
+  h_node_sum  += h_node; 
+  t_node_sum  += t_node; 
 
   #ifdef PMS5003ST
     h_pms_sum  += data.pm_h;
-    t_pms_sum  += data.pm_t;
-  #endif
+    t_pms_sum  += data.pm_t;  
+  #endif  
 
   rgbSet(pm25,reading_state);
 }
 
-bool readPMSdata(Stream *s)
+bool readPMSdata(Stream *s) 
 {
 #ifdef PMS5003
-  if (!s->available())
+  if (!s->available()) 
   {
     return false;
   }
 
   // Read a byte at a time until we get to the special '0x42' start-byte
-  if (s->peek() != 0x42)
+  if (s->peek() != 0x42) 
   {
     s->read();
     return false;
   }
 
   // Now read all 32 bytes
-  if (s->available() < 32)
+  if (s->available() < 32) 
   {
     return false;
   }
@@ -875,7 +835,7 @@ bool readPMSdata(Stream *s)
   s->readBytes(buffer, 32);
 
   // get checksum ready
-  for(uint8_t i=0; i<30; i++)
+  for(uint8_t i=0; i<30; i++) 
   {
     sum += buffer[i];
   }
@@ -900,18 +860,18 @@ bool readPMSdata(Stream *s)
   return true;
 #endif
 #ifdef PMS5003ST
-  if (!s->available())
+  if (!s->available()) 
   {
     return false;
   }
   // Read a byte at a time until we get to the special '0x42' start-byte
-  if (s->peek() != 0x42)
+  if (s->peek() != 0x42) 
   {
     s->read();
     return false;
   }
   // Now read all 32 bytes
-  if (s->available() < 40)
+  if (s->available() < 40) 
   {
     return false;
   }
@@ -920,7 +880,7 @@ bool readPMSdata(Stream *s)
   uint16_t sum = 0;
   s->readBytes(buffer, 40);
   // get checksum ready
-  for(uint8_t i=0; i<38; i++)
+  for(uint8_t i=0; i<38; i++) 
   {
     sum += buffer[i];
   }
@@ -952,8 +912,8 @@ bool setPowerBoostKeepOn(int en)
   if (en)
   {
     I2C_BUS.write(0x37); // Set bit1: 1 enable 0 disable boost keep on
-  }
-  else
+  } 
+  else 
   {
     I2C_BUS.write(0x35); // 0x37 is default reg value
   }
@@ -986,7 +946,7 @@ void rgbSet(uint16_t pm25_value, bool rgb_onoff)
       rgb_led[0] = CRGB::MediumPurple;
     }
   }
-  else
+  else 
   {
       rgb_led[0] = CRGB::Black;
   }
@@ -1039,7 +999,9 @@ void IRAM_ATTR timerISR()  //Timer ISR
   }
 }
 
-void IRAM_ATTR timerHeaterISR()  //Timer ISR
+void IRAM_ATTR timer_HM_ISR()  //Timer ISR
 {
-  heater_timer_flag = 1;
+  //update sensor temperature
+  //if temp > limit then stop
+
 }

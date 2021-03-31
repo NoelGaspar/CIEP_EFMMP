@@ -1,0 +1,45 @@
+
+LIST OF CMDS
+---------------
+
+
+- led: Command to
+
+  cmd arg
+
+- heater_set
+  cmd arg
+
+- heater_on
+  cmd arg
+
+- start
+  cmd arg
+
+- stop
+
+- samples
+
+- pmTH
+
+- Reset
+
+
+
+Example: 
+
+-Start
+mosquitto_pub -h "190.121.23.217" -t "CIEP/rx" -m "{\"id\":\"CIEP-01\",\"cmd\":\"start\",\"arg1\":0,\"arg2\":4}"
+
+-Turn on led
+mosquitto_pub -h "190.121.23.217" -t "CIEP/rx" -m "{\"id\":\"CIEP-01\",\"cmd\":\"led\",\"arg1\":1,\"arg2\":1}"
+
+-Turn off led
+mosquitto_pub -h "190.121.23.217" -t "CIEP/rx" -m "{\"id\":\"CIEP-01\",\"cmd\":\"led\",\"arg1\":1,\"arg2\":1}"
+
+
+Examples 
+litsen data
+mosquitto_sub -h 190.121.23.217 -t "CIEP/tx"
+litsen comands
+mosquitto_sub -h 190.121.23.217 -t "CIEP/rx"
