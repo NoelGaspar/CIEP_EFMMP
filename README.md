@@ -4,6 +4,7 @@ VESRION : V 0.2.1 b
 AUTOR   : WAC@IOWLABS
 
 CIEP        : Estaciones de monitoreo de material particulado.
+
 DESCRIPTION : This code read a PMsensor and publish the data to a server.
   the protocols used to publish data are:
     - Json to strcuture data
